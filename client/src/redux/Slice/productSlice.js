@@ -29,11 +29,23 @@ export const addProduct = createAsyncThunk(
     async (newProduct) => {
         // console.log(newProduct);
         const response = await axios.post(`${API_BASE}/addproducts`, newProduct, {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {"Content-Type": "multipart/form-data"},
         });
-        alert("Thêm sản phẩm thành công!");
         return response.data;
+    }
+);
 
+
+// sửa sản phẩm
+export const editProduct = createAsyncThunk(
+    "products/edit",
+    async ({id, updatedProduct}) => {
+        // console.log(Array.from(updatedProduct.entries()));
+        const response = await axios.put(`${API_BASE}/editproduct/${id}`, updatedProduct, {
+                headers: {"Content-Type": "multipart/form-data"},
+            }
+        );
+        return response.data;
     }
 );
 
@@ -82,12 +94,28 @@ const productSlice = createSlice({
             })
             .addCase(addProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list.push(action.payload.data); // thêm sản phẩm vừa tạo vào state
+                // state.list.push(action.payload.data); // thêm sản phẩm vừa tạo vào state
             })
             .addCase(addProduct.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
-            });
+            })
+
+            // editProduct
+            .addCase(editProduct.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(editProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                // state.list.push(action.payload.data); // thêm sản phẩm vừa tạo vào state
+            })
+            .addCase(editProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+
+
     },
 });
 

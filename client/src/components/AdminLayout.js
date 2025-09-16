@@ -1,8 +1,16 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import {useSelector, useDispatch} from "react-redux";
+
+
 import AdminComponent from './AdminComponent/AdminComponent';
+import * as enumsSlice from '../redux/Slice/enumsSlice';
 import {Outlet} from "react-router-dom";
 
 const AdminLayout = ({children}) => {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(enumsSlice.fetchEnums());
+    }, [dispatch]);
     return (
         <div className="container-fluid admin-page">
             <div className="row">

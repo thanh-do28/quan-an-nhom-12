@@ -21,6 +21,6 @@ const upload = multer({ storage });
 router.post("/addproducts",upload.single("anh"),productController.addproduct )
 router.get("/alllistproducts",productController.getlistproduct)
 router.get("/topproducts",productController.gettopproduct)
-router.put("/editproduct/:id",productController.editproduct)
+router.put("/editproduct/:id",upload.single("anh"),productController.editproduct)
 
 export default router;

@@ -21,6 +21,7 @@ export const addproduct = async (req, res) => {
 export const getlistproduct = async (req, res) => {
     try {
         const result = await productService.getProductService();
+        // console.log(result);
         res.status(201).json(result);
     } catch (err) {
         res.status(500).json(err);
@@ -40,8 +41,13 @@ export const gettopproduct = async (req, res) => {
 // edit sản phẩm
 export const editproduct = async (req, res) => {
     try {
+
         const id = req.params.id;
         const body = req.body;
+        // console.log(body);
+        if (req.file) {
+            body.anh = req.file.filename;
+        }
         const result = await productService.editProductService(id, body);
         res.status(201).json(result);
     } catch (err) {
