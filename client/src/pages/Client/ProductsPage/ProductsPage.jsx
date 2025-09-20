@@ -74,7 +74,7 @@ const ProductsPage = () => {
                                 .map((sub) => (
                                     <div
                                         key={sub.id}
-                                        className={`menu-item ms-3 menu-sub ${activeSubCategory === sub ? "active" : ""}`}
+                                        className={`menu-item ms-4 menu-sub ${activeSubCategory === sub ? "active" : ""}`}
                                         onClick={() => setActiveSubCategory(sub)}
                                     >
                                         {sub.label}
