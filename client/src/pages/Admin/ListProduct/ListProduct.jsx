@@ -6,18 +6,26 @@ import EditProductModal from "./EditProductModal";
 import "./ListProduct.css"
 
 const ListProduct = () => {
-    const {list, loading, error} = useSelector((state) => state.products);
+    const {list, loading, error, searchList} = useSelector((state) => state.products);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const listProducts = list?.data || [];
+    const [searchKeyword, setSearchKeyword] = useState("");
     const dispatch = useDispatch();
 
+    const displayList = searchKeyword.trim() ? searchList : list;
 
-    // Hàm get
-    useEffect(() => {
-        // gọi API lấy sản phẩm khi component mount
-        dispatch(productSlice.fetchProducts());
-    }, [dispatch]);
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchKeyword(value); // cập nhật input ngay
+
+        if (value.trim() !== "") {
+            dispatch(productSlice.searchProducts(value)); // gọi API tìm kiếm ngay
+        } else {
+            dispatch({ type: "products/clearSearch" }); // reset nếu input rỗng
+        }
+    };
+
+
 
     // Hàm sửa
     const onEdit = (product) => {
@@ -29,7 +37,7 @@ const ListProduct = () => {
     // Hàm xoá
     const onDelete = (id) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            // dispatch(deleteProduct(id));
+            dispatch(productSlice.deleteProduct(id));
         }
     };
 
@@ -40,9 +48,22 @@ const ListProduct = () => {
         <div id="list-product">
             <div className="p-4">
                 <h2 className="text-xl font-bold mb-4">Danh sách sản phẩm</h2>
+
+                {/* Realtime Search */}
+                <div className="mb-4 flex gap-2">
+                    <input
+                        type="text"
+                        value={searchKeyword}
+                        onChange={handleSearchChange}
+                        placeholder="Nhập tên sản phẩm..."
+                        className="border border-gray-300 px-2 py-1 rounded"
+                    />
+                </div>
+
                 <table className="table-auto w-full border-collapse border border-gray-300">
                     <thead>
                     <tr className="bg-gray-100">
+                        <th className="border border-gray-300 px-4 py-2">Id</th>
                         <th className="border border-gray-300 px-4 py-2">Tên món</th>
                         <th className="border border-gray-300 px-4 py-2">Ảnh</th>
                         <th className="border border-gray-300 px-4 py-2">Giá</th>
@@ -56,9 +77,10 @@ const ListProduct = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {listProducts && listProducts.length > 0 ? (
-                        listProducts.map((item, index) => (
+                    {displayList && displayList.length > 0 ? (
+                        displayList.map((item, index) => (
                             <tr key={index}>
+                                <td className="border border-gray-300 px-4 py-2">{item.id}</td>
                                 <td className="border border-gray-300 px-4 py-2">{item.ten_mon}</td>
                                 <td className="border border-gray-300 px-4 py-2">
                                     <img

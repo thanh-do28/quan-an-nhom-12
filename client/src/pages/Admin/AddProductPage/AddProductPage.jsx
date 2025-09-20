@@ -2,10 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {useSelector, useDispatch} from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as productSlice from "../../../redux/Slice/productSlice";
-import * as enumsSlice from "../../../redux/Slice/enumsSlice";
+
 
 const AddProductPage = () => {
-    const {list} = useSelector((state) => state.enums);
+    const {enumList} = useSelector((state) => state.enums);
     const [phanloai, setPhanLoai] = useState("");
     const [chi_tiet_phan_loai, setChiTiet] = useState("");
     const [kichCo, setKichCo] = useState([]);
@@ -58,8 +58,8 @@ const AddProductPage = () => {
 
     // Helper: render CategoryLevel1
     const renderCategoryLevel1 = () => {
-        if (!list.CategoryLevel1) return null;
-        return Object.entries(list.CategoryLevel1).map(([key, obj]) => (
+        if (!enumList.CategoryLevel1) return null;
+        return Object.entries(enumList.CategoryLevel1).map(([key, obj]) => (
             <option key={key} value={key}>
                 {obj.label}
             </option>
@@ -68,9 +68,9 @@ const AddProductPage = () => {
 
     // Helper: render CategoryLevel2 theo phanloai
     const renderCategoryLevel2 = () => {
-        if (!phanloai || !list.CategoryLevel2) return [];
-        return Object.entries(list.CategoryLevel2)
-            .filter(([_, obj]) => obj.parentId === list.CategoryLevel1[phanloai].id)
+        if (!phanloai || !enumList.CategoryLevel2) return [];
+        return Object.entries(enumList.CategoryLevel2)
+            .filter(([_, obj]) => obj.parentId === enumList.CategoryLevel1[phanloai].id)
             .map(([key, obj]) => (
                 <option key={key} value={key}>
                     {obj.label}

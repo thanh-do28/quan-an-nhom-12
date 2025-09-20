@@ -7,9 +7,8 @@ import "./HomePage.css"
 
 const HomePage = () => {
 
-    const {list, loading, error} = useSelector((state) => state.products);
+    const {topList, loading, error} = useSelector((state) => state.products);
     const dispatch = useDispatch();
-    const listProduct = list?.data || [];
 
     // hàm get
     useEffect(() => {
@@ -50,7 +49,7 @@ const HomePage = () => {
 
                 {/* Hàng 1 */}
                 <div className="row g-4">
-                    {listProduct.slice(0, 3).map((item, index) => (
+                    {topList.slice(0, 3).map((item, index) => (
                         <div className="col" key={index}>
                             <div className="card h-100 card-feature">
                                 <img src={`http://localhost:8080/images/${item.anh}`} className="card-feature-img"
@@ -65,7 +64,7 @@ const HomePage = () => {
 
                 {/* Hàng 2 */}
                 <div className="row g-4 mt-3">
-                    {listProduct.slice(3, 6).map((item, index) => (
+                    {topList.slice(3, 6).map((item, index) => (
                         <div className="col" key={index}>
                             <div className="card h-100 card-feature">
                                 <img src={`http://localhost:8080/images/${item.anh}`}  className="card-feature-img"

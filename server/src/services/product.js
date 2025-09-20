@@ -67,6 +67,28 @@ export const getProductService = async () => {
     }
 };
 
+// lấy toàn bộ sản phẩm không có trạng thái ẩn
+export const getProductClineService = async () => {
+    try {
+        const getProductCline = await db.SanPham.findAll({
+            where: {
+                trang_thai: {
+                    [db.Sequelize.Op.ne]: 'an' // không lấy những sản phẩm có trang_thai = 'an'
+                }
+            }
+        });
+        return {
+            message: "Get sản phẩm thành công",
+            data: getProductCline,
+        };
+    } catch (error) {
+        throw {
+            message: "Lỗi khi lấy sản phẩm",
+            error: error.message,
+        };
+    }
+};
+
 // lấy 6 sản phẩm
 export const getTopProductService = async (req, res) => {
     try {
@@ -112,8 +134,8 @@ export const editProductService = async (id, body) => {
         }
 
         // 4️⃣ tìm sản phẩm cần sửa
-        const product = await db.SanPham.findByPk(id);
-        if (!product) {
+        const editProduct = await db.SanPham.findByPk(id);
+        if (!editProduct) {
             throw new Error("Sản phẩm không tồn tại");
         }
 
@@ -127,20 +149,73 @@ export const editProductService = async (id, body) => {
             trang_thai: body.trang_thai,
             phan_loai: CategoryLevel1[body.phan_loai].label, // lưu label
             chi_tiet_phan_loai: CategoryLevel2[body.chi_tiet_phan_loai].label, // lưu label
-            anh: body.anh ? body.anh : product.anh, // update ảnh nếu có
+            anh: body.anh ? body.anh : editProduct.anh, // update ảnh nếu có
         };
 
         // 6️⃣ cập nhật database
-        await product.update(updatedData);
+        await editProduct.update(updatedData);
 
         return {
             message: "Sửa sản phẩm thành công",
-            data: product,
+            data: editProduct,
         };
     } catch (error) {
         throw {
             message: "Lỗi khi sửa sản phẩm",
             error: error.message,
+        };
+    }
+};
+
+// Xoá sản phẩm
+export const deleteProductService = async (id) => {
+    try {
+        const deleteProduct = await db.SanPham.findByPk(id);
+        if (!deleteProduct) {
+            throw new Error("Không tìm thấy sản phẩm");
+        }
+
+        await deleteProduct.destroy();
+
+        return {
+            message: "Xoá sản phẩm thành công",
+            data: id
+        };
+    } catch (error) {
+        throw {
+            message: "Lỗi khi xoá sản phẩm",
+            error: error.message,
+        };
+    }
+};
+
+// tìm kiếm sản phẩm
+export const searchProductService = async (q) => {
+    try {
+        // Nếu không có q thì trả luôn rỗng
+        if (!q || q.trim() === "") {
+            return {
+                message: "Thiếu từ khóa tìm kiếm",
+                data: []
+            };
+        }
+        // console.log(q);
+        const products = await db.SanPham.findAll({
+            where: {
+                ten_mon: {
+                    [db.Sequelize.Op.like]: `%${q}%`
+                },
+            }
+        });
+
+        return {
+            message: "Tìm kiếm thành công",
+            data: products
+        };
+    } catch (error) {
+        throw {
+            message: "Lỗi khi tìm kiếm sản phẩm",
+            error: error.message
         };
     }
 };

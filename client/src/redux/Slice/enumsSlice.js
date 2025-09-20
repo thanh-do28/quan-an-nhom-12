@@ -16,7 +16,7 @@ export const fetchEnums = createAsyncThunk(
 const enumsSlice = createSlice({
     name: "enums",
     initialState: {
-        list: [],
+        enumList: [],
         loading: false,
         error: null,
     },
@@ -30,7 +30,7 @@ const enumsSlice = createSlice({
             })
             .addCase(fetchEnums.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload;
+                state.enumList = action.payload;
             })
             .addCase(fetchEnums.rejected, (state, action) => {
                 state.loading = false;

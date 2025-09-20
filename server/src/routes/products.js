@@ -20,7 +20,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 router.post("/addproducts",upload.single("anh"),productController.addproduct )
 router.get("/alllistproducts",productController.getlistproduct)
+router.get("/alllistproductscline",productController.getlistproductcline)
 router.get("/topproducts",productController.gettopproduct)
 router.put("/editproduct/:id",upload.single("anh"),productController.editproduct)
+router.delete("/deleteproduct/:id", productController.deleteProduct)
+router.get("/searchproduct", productController.searchProducts);
+
 
 export default router;

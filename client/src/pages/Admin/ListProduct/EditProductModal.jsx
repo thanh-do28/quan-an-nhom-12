@@ -5,7 +5,7 @@ import "./EditProductModal.css";
 import * as productSlice from "../../../redux/Slice/productSlice";
 
 const EditProductModal = ({isOpen, onClose, product}) => {
-    const {list} = useSelector((state) => state.enums);
+    const {enumList} = useSelector((state) => state.enums);
     const [id, setId] = useState();
     const [formData, setFormData] = useState(null);
     const [phan_loai, setPhanLoai] = useState("");
@@ -16,12 +16,12 @@ const EditProductModal = ({isOpen, onClose, product}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     useEffect(() => {
-        if (product && list?.CategoryLevel1 && list?.CategoryLevel2) {
+        if (product && enumList?.CategoryLevel1 && enumList?.CategoryLevel2) {
             setFormData(product);
             // map label cũ -> key
-            const phanLoaiKey = Object.entries(list.CategoryLevel1)
+            const phanLoaiKey = Object.entries(enumList.CategoryLevel1)
                 .find(([k, v]) => v.label === product.phan_loai)?.[0] || "";
-            const chiTietKey = Object.entries(list.CategoryLevel2)
+            const chiTietKey = Object.entries(enumList.CategoryLevel2)
                 .find(([k, v]) => v.label === product.chi_tiet_phan_loai)?.[0] || "";
 
             setPhanLoai(phanLoaiKey);
@@ -30,9 +30,9 @@ const EditProductModal = ({isOpen, onClose, product}) => {
             setTrangThai(product.trang_thai || "hien");
             setId(product.id);
         }
-    }, [product, list]);
+    }, [product, enumList]);
 
-    if (!isOpen || !formData || !list?.CategoryLevel1 || !list?.CategoryLevel2) return null;
+    if (!isOpen || !formData || !enumList?.CategoryLevel1 || !enumList?.CategoryLevel2) return null;
 
     const handleKichCoChange = (e) => {
         const {value, checked} = e.target;
@@ -75,7 +75,7 @@ const EditProductModal = ({isOpen, onClose, product}) => {
     };
 
     const renderCategoryLevel1 = () =>
-        Object.entries(list.CategoryLevel1).map(([key, obj]) => (
+        Object.entries(enumList.CategoryLevel1).map(([key, obj]) => (
             <option key={key} value={key}>
                 {obj.label}
             </option>
@@ -83,9 +83,9 @@ const EditProductModal = ({isOpen, onClose, product}) => {
 
     const renderCategoryLevel2 = () => {
         if (!phan_loai) return null;
-        const parentId = list.CategoryLevel1[phan_loai]?.id;
+        const parentId = enumList.CategoryLevel1[phan_loai]?.id;
         if (!parentId) return null;
-        return Object.entries(list.CategoryLevel2)
+        return Object.entries(enumList.CategoryLevel2)
             .filter(([_, obj]) => obj.parentId === parentId)
             .map(([key, obj]) => (
                 <option key={key} value={key}>

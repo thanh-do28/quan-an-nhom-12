@@ -1,8 +1,17 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useSelector, useDispatch} from "react-redux";
+
 import HeaderComponent from './HeaderComponent/HeaderComponent';
 import FooterComponent from './FooterComponent/FooterComponent';
+import * as enumsSlice from "../redux/Slice/enumsSlice";
+import * as productSlice from "../redux/Slice/productSlice";
 
 const MainLayout = ({children}) => {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(enumsSlice.fetchEnums());
+        dispatch(productSlice.fetchProductsCline())
+    }, [dispatch]);
     return (
         <>
             <HeaderComponent />

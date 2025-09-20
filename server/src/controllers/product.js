@@ -1,4 +1,5 @@
 import * as productService from '../services/product.js';
+import {searchProductService} from "../services/product.js";
 
 // thêm sản phẩm
 export const addproduct = async (req, res) => {
@@ -21,6 +22,16 @@ export const addproduct = async (req, res) => {
 export const getlistproduct = async (req, res) => {
     try {
         const result = await productService.getProductService();
+        // console.log(result);
+        res.status(201).json(result);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+
+export const getlistproductcline = async (req, res) => {
+    try {
+        const result = await productService.getProductClineService();
         // console.log(result);
         res.status(201).json(result);
     } catch (err) {
@@ -54,3 +65,27 @@ export const editproduct = async (req, res) => {
         res.status(500).json(err);
     }
 }
+
+// xoá sản phẩm
+export const deleteProduct = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await productService.deleteProductService(id);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+// tìm kiếm sản phẩm
+export const searchProducts = async (req, res) => {
+    const { keyword } = req.query; // lấy từ query string ?keyword=...
+    // console.log(keyword);
+    try {
+        const result = await productService.searchProductService(keyword);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};

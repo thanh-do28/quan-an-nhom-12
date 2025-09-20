@@ -13,6 +13,17 @@ export const fetchProducts = createAsyncThunk(
     }
 );
 
+
+// Lấy danh sách sản phẩm cline
+export const fetchProductsCline = createAsyncThunk(
+    "productsCline/fetch",
+    async () => {
+        const response = await axios.get(`${API_BASE}/alllistproductscline`);
+        return response.data;
+    }
+);
+
+
 // lấy 6 sản phẩm nổi bật
 export const fetchProduct = createAsyncThunk(
     "product/fetch",
@@ -49,14 +60,42 @@ export const editProduct = createAsyncThunk(
     }
 );
 
+
+// xoá sản phẩm
+export const deleteProduct = createAsyncThunk(
+    "products/delete",
+    async (id) => {
+        const response = await axios.delete(`${API_BASE}/deleteproduct/${id}`);
+        return response.data;
+    }
+);
+
+
+// tìm kiếm sản phẩm
+export const searchProducts = createAsyncThunk(
+    "products/search",
+    async (keyword) => {
+        const response = await axios.get(`${API_BASE}/searchproduct?keyword=${keyword}`);
+        return response.data; // { message, data }
+    }
+);
+
+
 const productSlice = createSlice({
     name: "products",
     initialState: {
         list: [],
+        clineList: [],
+        searchList: [],
+        topList: [],
         loading: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        clearSearch: (state) => {
+            state.searchList = [];
+        },
+    },
     extraReducers: (builder) => {
         builder
             // fetchProducts
@@ -66,9 +105,25 @@ const productSlice = createSlice({
             })
             .addCase(fetchProducts.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload;
+                state.list = action.payload.data;
+                // console.log(action.payload);
             })
             .addCase(fetchProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+
+            // fetchProductsCline
+            .addCase(fetchProductsCline.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchProductsCline.fulfilled, (state, action) => {
+                state.loading = false;
+                state.clineList = action.payload.data;
+                console.log(action.payload.data);
+            })
+            .addCase(fetchProductsCline.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             })
@@ -80,7 +135,8 @@ const productSlice = createSlice({
             })
             .addCase(fetchProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload;
+                state.topList = action.payload.data;
+                // console.log(action.payload);
             })
             .addCase(fetchProduct.rejected, (state, action) => {
                 state.loading = false;
@@ -94,7 +150,6 @@ const productSlice = createSlice({
             })
             .addCase(addProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                // state.list.push(action.payload.data); // thêm sản phẩm vừa tạo vào state
             })
             .addCase(addProduct.rejected, (state, action) => {
                 state.loading = false;
@@ -108,9 +163,35 @@ const productSlice = createSlice({
             })
             .addCase(editProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                // state.list.push(action.payload.data); // thêm sản phẩm vừa tạo vào state
             })
             .addCase(editProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+
+            // deleteproduct
+            .addCase(deleteProduct.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                const deletedId = Number(action.payload.data);
+                state.list = state.list.filter(p => p.id !== deletedId);
+                // console.log("Xoá thành công, list còn lại:", state.list);
+            })
+            .addCase(deleteProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+
+            // searchproduct
+            .addCase(searchProducts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.searchList = action.payload.data;
+                // console.log("tìm thành công, list tìm thấy:", state.searchList);
+            })
+            .addCase(searchProducts.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             })
