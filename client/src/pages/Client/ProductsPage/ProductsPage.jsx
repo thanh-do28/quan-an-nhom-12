@@ -5,7 +5,7 @@ import "./ProductsPage.css";
 const ProductsPage = () => {
     const {clineList} = useSelector((state) => state.products); // list sản phẩm từ DB
     const {enumList} = useSelector((state) => state.enums);
-    console.log(clineList);
+    // console.log(clineList);
     const [activeCategory, setActiveCategory] = useState(null); // Level1
     const [activeSubCategory, setActiveSubCategory] = useState(null); // Level2
 
@@ -36,7 +36,7 @@ const ProductsPage = () => {
     const displayList = activeSubCategory
         ? clineList.filter((item) => item.chi_tiet_phan_loai === activeSubCategory.label)
         : [];
-
+    // console.log(activeSubCategory);
 
     // Khi click Level1: chọn Level1 và tự động chọn Level2 con đầu tiên
     const handleClickLevel1 = (key) => {
@@ -49,6 +49,11 @@ const ProductsPage = () => {
 
         // Chọn Level2 đầu tiên làm activeSubCategory
         setActiveSubCategory(subCats[0] || null);
+    };
+
+    // click sản phẩm phóng to
+    const handleClickShow = () => {
+        alert("Bạn đã click trong thẻ div");
     };
 
 
@@ -90,7 +95,7 @@ const ProductsPage = () => {
                 <div className="row g-3">
                     {displayList.length > 0 ? (
                         displayList.map((dish) => (
-                            <div key={dish.id} className="col-md-4">
+                            <div key={dish.id} className="col-md-4" onClick={handleClickShow}>
                                 <div className="card">
                                     <img
                                         src={`http://localhost:8080/images/${dish.anh}`}

@@ -10,6 +10,7 @@ const MainLayout = ({children}) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(enumsSlice.fetchEnums());
+        dispatch(enumsSlice.fetchThongtin())
         dispatch(productSlice.fetchProductsCline())
     }, [dispatch]);
     return (

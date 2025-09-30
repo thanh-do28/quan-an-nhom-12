@@ -121,7 +121,7 @@ const productSlice = createSlice({
             .addCase(fetchProductsCline.fulfilled, (state, action) => {
                 state.loading = false;
                 state.clineList = action.payload.data;
-                console.log(action.payload.data);
+                // console.log(action.payload.data);
             })
             .addCase(fetchProductsCline.rejected, (state, action) => {
                 state.loading = false;

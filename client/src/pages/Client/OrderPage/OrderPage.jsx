@@ -1,39 +1,38 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {useSelector} from "react-redux";
 import "./OrderPage.css"
 
 const OrderPage = () => {
     const [cart, setCart] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState("SET");
+    const [activeCategoryOrder, setActiveCategoryOrder] = useState(null);
 
-    const categories = [
-        "SET",
-        "KHAI VỊ",
-        "SASHIMI CÁ HỒI",
-        "SASHIMI CÁ TRÍCH",
-        "SASHIMI BỤNG CÁ HỒI",
-        "SASHIMI BẠCH TUỘC",
-        "SASHIMI SÒ ĐỎ",
-        "SASHIMI CÁ TRẮNG",
-        "SASHIMI SÒ ĐIỆP",
-        "SASHIMI CÁ SABA NGÂM DẤM",
-        "SASHIMI",
-    ];
+    const {clineList} = useSelector((state) => state.products); // list sản phẩm từ DB
+    const {enumList} = useSelector((state) => state.enums);
 
-    const items = [
-        {name: "Món sashimi mix A", price: 868000, img: "/images/a.jpg"},
-        {name: "Món sashimi mix B", price: 658000, img: "/images/b.jpg"},
-        {name: "Món sashimi mix C", price: 288000, img: "/images/c.jpg"},
-        {name: "Món sashimi mix D", price: 368000, img: "/images/d.jpg"},
-        {name: "Set sushi chay", price: 198000, img: "/images/e.jpg"},
-        {name: "Set 288k", price: 288000, img: "/images/f.jpg"},
-    ];
+    const [activeSubCategoryOrder, setActiveSubCategoryOrder] = useState(null); // Level2
+
+    const level2Keys = enumList?.CategoryLevel2 ? Object.keys(enumList.CategoryLevel2) : [];
+
+    useEffect(() => {
+        if (!activeSubCategoryOrder && level2Keys.length > 0) {
+            const defaultCategory = enumList.CategoryLevel2[level2Keys[0]];
+
+            setActiveSubCategoryOrder(defaultCategory);
+        }
+
+    }, [activeSubCategoryOrder, level2Keys, enumList]);
+
+    // lọc sản phẩm theo activeSubCategoryOrder
+    const displayList = activeSubCategoryOrder
+        ? clineList.filter((item) => item.chi_tiet_phan_loai === activeSubCategoryOrder.label)
+        : [];
 
     const addToCart = (item) => {
-        const exist = cart.find((c) => c.name === item.name);
+        const exist = cart.find((c) => c.ten_mon === item.ten_mon);
         if (exist) {
             setCart(
                 cart.map((c) =>
-                    c.name === item.name ? {...c, qty: c.qty + 1} : c
+                    c.ten_mon === item.ten_mon ? {...c, qty: c.qty + 1} : c
                 )
             );
         } else {
@@ -42,13 +41,13 @@ const OrderPage = () => {
     };
 
     const totalQty = cart.reduce((sum, c) => sum + c.qty, 0);
-    const totalPrice = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
+    const totalPrice = cart.reduce((sum, c) => sum + c.gia * c.qty, 0);
 
     // Tăng số lượng
     const increaseQty = (item) => {
         setCart(
             cart.map((c) =>
-                c.name === item.name ? {...c, qty: c.qty + 1} : c
+                c.ten_mon === item.ten_mon ? {...c, qty: c.qty + 1} : c
             )
         );
     };
@@ -58,7 +57,7 @@ const OrderPage = () => {
         setCart(
             cart
                 .map((c) =>
-                    c.name === item.name ? {...c, qty: c.qty - 1} : c
+                    c.ten_mon === item.ten_mon ? {...c, qty: c.qty - 1} : c
                 )
                 .filter((c) => c.qty > 0) // Xóa nếu qty = 0
         );
@@ -70,15 +69,19 @@ const OrderPage = () => {
                     {/* Sidebar */}
                     <div className="col-2 bg-light sidebar">
                         <h5 className="mt-3">Thực đơn</h5>
-                        <ul className="list-unstyled">
-                            {categories.map((cat, index) => (
+                        <ul className="list-unstyled ms-5">
+                            {level2Keys.map((key) => (
                                 <li
-                                    key={index}
-                                    className={`py-2 ${selectedCategory === cat ? "fw-bold text-warning" : ""}`}
+                                    key={key}
+                                    className={`py-2 ${activeSubCategoryOrder?.id === enumList.CategoryLevel2[key].id ? "fw-bold text-warning" : ""}`}
                                     role="button"
-                                    onClick={() => setSelectedCategory(cat)}
+                                    onClick={() => {
+                                        console.log("Click vào key:", key);
+                                        console.log("Dữ liệu object:", activeSubCategoryOrder);
+                                        setActiveSubCategoryOrder(enumList.CategoryLevel2[key])
+                                    }}
                                 >
-                                    {cat}
+                                    {enumList.CategoryLevel2[key].label}
                                 </li>
                             ))}
                         </ul>
@@ -92,33 +95,37 @@ const OrderPage = () => {
                             className="form-control my-3"
                         />
                         <h5>SET</h5>
-                        {items.map((item, index) => (
-                            <div
-                                key={index}
-                                className="d-flex align-items-center justify-content-between border-bottom py-2"
-                            >
-                                <div className="d-flex align-items-center">
-                                    <img
-                                        src={item.img}
-                                        alt={item.name}
-                                        width="80"
-                                        className="me-3 rounded"
-                                    />
-                                    <div>
-                                        <div>{item.name}</div>
-                                        <div className="text-warning fw-bold">
-                                            {item.price.toLocaleString()}đ
+                        {displayList.length > 0 ? (
+                            displayList.map((dish) => (
+                                <div
+                                    key={dish.id}
+                                    className="d-flex align-items-center justify-content-between border-bottom py-2 mx-5"
+                                >
+                                    <div className="d-flex align-items-center">
+                                        <img
+                                            src={`http://localhost:8080/images/${dish.anh}`}
+                                            alt={dish.ten_mon}
+                                            width="80"
+                                            className="me-3 rounded"
+                                        />
+                                        <div>
+                                            <div>{dish.ten_mon}</div>
+                                            <div className="text-warning fw-bold">
+                                                {dish.gia} đ
+                                            </div>
                                         </div>
                                     </div>
+                                    <button
+                                        className="btn btn-outline-warning rounded-circle"
+                                        onClick={() => addToCart(dish)}
+                                    >
+                                        +
+                                    </button>
                                 </div>
-                                <button
-                                    className="btn btn-outline-warning rounded-circle"
-                                    onClick={() => addToCart(item)}
-                                >
-                                    +
-                                </button>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p>Chưa có món nào trong danh mục này.</p>
+                        )}
                     </div>
 
                     {/* Cart */}
@@ -151,11 +158,11 @@ const OrderPage = () => {
                                                 >
                                                     +
                                                 </button>
-                                                {item.name}
+                                                {item.ten_mon}
                                             </div>
                                             <div className="text-end">
                       <span className="text-warning fw-bold">
-                        {(item.price * item.qty).toLocaleString()}đ
+                        {(item.gia * item.qty).toLocaleString()}đ
                       </span>
                                             </div>
                                         </div>

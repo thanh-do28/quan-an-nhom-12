@@ -3,6 +3,6 @@ import * as enums from "../controllers/enums.js";
 const router = express.Router();
 
 router.get("/enums", enums.enums)
-
+router.get("/thongtin", enums.ThongTin)
 
 export default router;
