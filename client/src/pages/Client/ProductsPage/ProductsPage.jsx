@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from "react";
 import {useSelector} from "react-redux";
 import "./ProductsPage.css";
+import ShowProduct from "./ShowProduct";
 
 const ProductsPage = () => {
     const {clineList} = useSelector((state) => state.products); // list sản phẩm từ DB
     const {enumList} = useSelector((state) => state.enums);
+    const [show, setShow] = useState(false);
     // console.log(clineList);
     const [activeCategory, setActiveCategory] = useState(null); // Level1
     const [activeSubCategory, setActiveSubCategory] = useState(null); // Level2
@@ -53,7 +55,7 @@ const ProductsPage = () => {
 
     // click sản phẩm phóng to
     const handleClickShow = () => {
-        alert("Bạn đã click trong thẻ div");
+        setShow(true);
     };
 
 
@@ -115,6 +117,9 @@ const ProductsPage = () => {
                     )}
                 </div>
             </div>
+            {show && ShowProduct(
+
+            )}
         </div>
     );
 };

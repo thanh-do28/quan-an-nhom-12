@@ -74,7 +74,7 @@ export const thongTin = Object.freeze({
         maSinhVien: "K23DTCN444",
         tenLop: "D23TXCN05-K",
         soDienThoai: "0976543210",
-        email: "hoangvane@example.com",
+        email: "duongthanhdo.com",
         donViCongTac: "Công ty JKL",
         websiteDonVi: "https://www.jkl.com",
         hinhAnh: "istockphoto-1337144146-612x612.jpg"
